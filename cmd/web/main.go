@@ -10,9 +10,13 @@ func main() {
 	// Then, register func home as the handler/controller for the "/"
 	// Local scope ServerMux (SECURE) vs Global scope DefaultServeMux (INSECURE)
 	mux := http.NewServeMux()
+
+	fileServer := http.FileServer(http.Dir("./ui/static/"))
+
 	mux.HandleFunc("/", home)                    // Subtree path matching
 	mux.HandleFunc("/snippet/view", snippetView) // Fixed path matching
 	mux.HandleFunc("/snippet/create", snippetCreate)
+	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 	// INSECURE GLOBAL SCOPE
 	//http.HandleFunc("/", home)                    // Subtree path matching
 	//http.HandleFunc("/snippet/view", snippetView) // Fixed path matching

@@ -16,6 +16,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	// Create a slice of paths to the two files. Note Base Layout must be first
 	files := []string{
 		"./ui/html/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
 		"./ui/html/home.tmpl",
 	}
 	ts, err := template.ParseFiles(files...)
