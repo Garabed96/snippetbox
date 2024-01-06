@@ -26,14 +26,7 @@ func main() {
 	// Use http.NewServeMux() function initialize a new multiplexer.
 	// Then, register func home as the handler/controller for the "/"
 	// Local scope ServerMux (SECURE) vs Global scope DefaultServeMux (INSECURE)
-	mux := http.NewServeMux()
 
-	fileServer := http.FileServer(http.Dir("./ui/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
-
-	mux.HandleFunc("/", app.home)                    // Subtree path matching
-	mux.HandleFunc("/snippet/view", app.snippetView) // Fixed path matching
-	mux.HandleFunc("/snippet/create", app.snippetCreate)
 	//INSECURE GLOBAL SCOPE
 	//http.HandleFunc("/", home)                    // Subtree path matching
 	//http.HandleFunc("/snippet/view", snippetView) // Fixed path matching
@@ -49,7 +42,7 @@ func main() {
 	srv := &http.Server{
 		Addr:     *addr,
 		ErrorLog: errorLog,
-		Handler:  mux,
+		Handler:  app.routes(),
 	}
 
 	infoLog.Printf("Starting server on %s", *addr)
