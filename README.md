@@ -10,3 +10,8 @@ ui/static contains static files (css / images)
 
 **RUN the application**
 `go run ./cmd/web`
+
+### **CLI Flags when starting application**
+
+`go run ./cmd/web -addr=":80"`
+
