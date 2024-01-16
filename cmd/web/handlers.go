@@ -19,21 +19,32 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r) // Use the http.NotFound() function to send a 404 response
 		return
 	}
-	// Create a slice of paths to the two files. Note Base Layout must be first
-	files := []string{
-		"./ui/html/base.tmpl",
-		"./ui/html/partials/nav.tmpl",
-		"./ui/html/home.tmpl",
-	}
-	ts, err := template.ParseFiles(files...)
+
+	snippets, err := app.snippets.Latest()
 	if err != nil {
-		app.serverError(w, err) // Use the serverError() helper.
+		app.serverError(w, err)
 		return
 	}
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		app.serverError(w, err) // Use the serverError() helper.
+
+	for _, snippet := range snippets {
+		fmt.Fprintf(w, "%+v\n", snippet)
 	}
+
+	// Create a slice of paths to the two files. Note Base Layout must be first
+	//files := []string{
+	//	"./ui/html/base.tmpl",
+	//	"./ui/html/partials/nav.tmpl",
+	//	"./ui/html/home.tmpl",
+	//}
+	//ts, err := template.ParseFiles(files...)
+	//if err != nil {
+	//	app.serverError(w, err) // Use the serverError() helper.
+	//	return
+	//}
+	//err = ts.ExecuteTemplate(w, "base", nil)
+	//if err != nil {
+	//	app.serverError(w, err) // Use the serverError() helper.
+	//}
 }
 
 // ***** TLDR: Handler is a Controller from MVC, basically controls LOGIC and HTTP requests *****
@@ -58,7 +69,21 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	fmt.Fprintf(w, "%+v", snippet)
+	// Init slice for paths to view.tmpl
+	files := []string{
+		"./ui/html/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
+		"./ui/html/view.tmpl",
+	}
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	err = ts.ExecuteTemplate(w, "base", snippet)
+	if err != nil {
+		app.serverError(w, err)
+	}
 }
 
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
