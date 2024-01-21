@@ -25,10 +25,12 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Call newTemplateData in helper.go
+	data := app.newTemplateData(r)
+	data.Snippets = snippets
+
 	// We're using the new render helper here
-	app.render(w, http.StatusOK, "home.tmpl", &templateData{
-		Snippets: snippets,
-	})
+	app.render(w, http.StatusOK, "home.tmpl", data)
 }
 
 // ***** TLDR: Handler is a Controller from MVC, basically controls LOGIC and HTTP requests *****
@@ -54,10 +56,11 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	data := app.newTemplateData(r)
+	data.Snippet = snippet
+
 	// We're using the new render helper here too
-	app.render(w, http.StatusOK, "view.tmpl", &templateData{
-		Snippet: snippet,
-	})
+	app.render(w, http.StatusOK, "view.tmpl", data)
 }
 
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
