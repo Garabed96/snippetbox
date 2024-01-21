@@ -4,12 +4,23 @@ import (
 	"html/template"
 	"path/filepath"
 	"snippetbox.garonazarian.net/internal/models"
+	"time"
 )
 
 type templateData struct {
 	CurrentYear int
 	Snippet     *models.Snippet
 	Snippets    []*models.Snippet
+}
+
+func humanDate(t time.Time) string {
+	return t.Format("02 Jan 2006 at 15:04")
+}
+
+// Init template.FuncMap obj and store it in global vars (string-keyed map which acts as a lookup b/w
+// names of our custom template func & func themselves
+var functions = template.FuncMap{
+	"humanDate": humanDate,
 }
 
 func newTemplateCache() (map[string]*template.Template, error) {
@@ -24,8 +35,8 @@ func newTemplateCache() (map[string]*template.Template, error) {
 	for _, page := range pages {
 		name := filepath.Base(page)
 
-		// Parse the base template file into a template set
-		ts, err := template.ParseFiles("./ui/html/base.tmpl")
+		// create an empty template set, use Funcs method to register FuncMap and then parse it
+		ts, err := template.New(name).Funcs(functions).ParseFiles("./ui/html/base.tmpl")
 		if err != nil {
 			return nil, err
 		}
