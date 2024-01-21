@@ -16,7 +16,7 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 // We have refactored our home handler func to a method on the application struct
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		http.NotFound(w, r) // Use the http.NotFound() function to send a 404 response
+		app.notFound(w) // Use the http.NotFound() function to send a 404 response
 		return
 	}
 
@@ -26,25 +26,25 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, snippet := range snippets {
-		fmt.Fprintf(w, "%+v\n", snippet)
+	files := []string{
+		"./ui/html/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
+		"./ui/html/home.tmpl",
+	}
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err) // Use the serverError() helper.
+		return
 	}
 
-	// Create a slice of paths to the two files. Note Base Layout must be first
-	//files := []string{
-	//	"./ui/html/base.tmpl",
-	//	"./ui/html/partials/nav.tmpl",
-	//	"./ui/html/home.tmpl",
-	//}
-	//ts, err := template.ParseFiles(files...)
-	//if err != nil {
-	//	app.serverError(w, err) // Use the serverError() helper.
-	//	return
-	//}
-	//err = ts.ExecuteTemplate(w, "base", nil)
-	//if err != nil {
-	//	app.serverError(w, err) // Use the serverError() helper.
-	//}
+	data := &templateData{
+		Snippets: snippets,
+	}
+
+	err = ts.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		app.serverError(w, err) // Use the serverError() helper.
+	}
 }
 
 // ***** TLDR: Handler is a Controller from MVC, basically controls LOGIC and HTTP requests *****
